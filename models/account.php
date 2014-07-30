@@ -306,18 +306,20 @@ class account_class extends AWS_MODEL
             }
         }
 
-        if ($attrib)
-        {
-            $sql = "SELECT MEM.*, MEB.signature, MEB.qq, MEB.homepage FROM " . $this->get_table('users') . " AS MEM LEFT JOIN " . $this->get_table('users_attrib') . " AS MEB ON MEM.uid = MEB.uid WHERE MEM.uid = " . intval($uid);
-        }
-        else
-        {
-            $sql = "SELECT * FROM " . $this->get_table('users') . " WHERE uid = " . intval($uid);
-        }
-
-        if (! $user_info = $this->query_row($sql))
+        if (! $user_info = $this->fetch_row('users', 'uid = ' . intval($uid)))
         {
             return false;
+        }
+        
+        if ($attrib)
+        {
+	        if ($user_attrib = $this->fetch_row('users_attrib', 'uid = ' . intval($uid)))
+	        {
+		        foreach ($user_attrib AS $key => $val)
+		        {
+			        $user_info[$key] = $val;
+		        }
+	        }
         }
 
         if (!$user_info['url_token'] AND $user_info['user_name'])
@@ -329,10 +331,18 @@ class account_class extends AWS_MODEL
         {
             $user_info['email_settings'] = unserialize($user_info['email_settings']);
         }
+        else
+        {
+	        $user_info['email_settings'] = array();
+        }
 
         if ($user_info['weixin_settings'])
         {
             $user_info['weixin_settings'] = unserialize($user_info['weixin_settings']);
+        }
+        else
+        {
+	        $user_info['weixin_settings'] = array();
         }
 
         $users_info[$uid] = $user_info;
@@ -400,10 +410,18 @@ class account_class extends AWS_MODEL
                 {
                     $val['email_settings'] = unserialize($val['email_settings']);
                 }
+                else
+                {
+	                $val['email_settings'] = array();
+                }
 
                 if ($val['weixin_settings'])
                 {
                     $val['weixin_settings'] = unserialize($val['weixin_settings']);
+                }
+                else
+                {
+	                $val['weixin_settings'] = array();
                 }
 
                 $data[$val['uid']] = $val;

@@ -66,7 +66,8 @@ class core_cache
 			$this->backendOptions = array(
 				'cache_dir' => realpath($cache_dir),
 				'hashed_directory_level' => 1,
-				'read_control_type' => 'adler32'
+				'read_control_type' => 'adler32',
+				'file_name_prefix' => substr(md5(G_SECUKEY), 0, 6)
 			);	
 		}
 			
@@ -108,13 +109,13 @@ class core_cache
 				{
 					foreach ($group as $cg)
 					{
-						$this->setGroup($cg, $key);
+						$this->setGroup($cg, $key, $lifetime);
 					}
 				}
 			}
 			else
 			{
-				$this->setGroup($group, $key);
+				$this->setGroup($group, $key, $lifetime);
 			}
 		}
 		
@@ -166,7 +167,7 @@ class core_cache
 	 * @param  $group_name
 	 * @param  $key
 	 */
-	public function setGroup($group_name, $key)
+	public function setGroup($group_name, $key, $lifetime)
 	{
 		$groupData = $this->get($this->groupPrefix . $group_name);
 		
@@ -177,7 +178,7 @@ class core_cache
 		
 		$groupData[] = $key;
 		
-		return $this->set($this->groupPrefix . $group_name, $groupData, null, $this->frontendOptions['lifeTime']);
+		return $this->set($this->groupPrefix . $group_name, $groupData, $lifetime);
 	}
 
 	/**

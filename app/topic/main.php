@@ -186,7 +186,7 @@ class main extends AWS_CONTROLLER
 		
 		if ($topic_info['merged_id'] AND $topic_info['merged_id'] != $topic_info['topic_id'])
 		{
-			if ($this->model('topic')->get_topic_by_title($topic_info['merged_id']))
+			if ($this->model('topic')->get_topic_by_id($topic_info['merged_id']))
 			{
 				HTTP::redirect('/topic/' . $topic_info['merged_id'] . '?rf=' . $topic_info['topic_id']);
 			}
@@ -244,7 +244,7 @@ class main extends AWS_CONTROLLER
 			ACTION_LOG::DELETE_TOPIC,
 			ACTION_LOG::ADD_RELATED_TOPIC,
 			ACTION_LOG::DELETE_RELATED_TOPIC
-		)));
+		)), -1);
 		
 		$log_list = $this->model('topic')->analysis_log($log_list);
 		
@@ -261,20 +261,16 @@ class main extends AWS_CONTROLLER
 			$contents_topic_id .= ',' . implode(',', $merged_topic_ids);
 			
 			if ($merged_topics_info = $this->model('topic')->get_topics_by_ids($merged_topic_ids))
-			{
-				$contents_topic_title = array(
-					$contents_topic_title
-				);
-				
+			{				
 				foreach($merged_topics_info AS $key => $val)
 				{
-					$contents_topic_title[] = $val['topic_title'];
+					$merged_topic_title[] = $val['topic_title'];
 				}
 			}
 			
-			if ($contents_topic_title)
+			if ($merged_topic_title)
 			{
-				$contents_topic_title .= ',' . implode(',', $contents_topic_title);
+				$contents_topic_title .= ',' . implode(',', $merged_topic_title);
 			}
 		}
 		

@@ -413,14 +413,14 @@ class weixin_class extends AWS_MODEL
 					switch ($child_param[0])
 					{
 						case 'FEATURE':
-							$topics_id = $this->model('feature')->get_topics_by_feature_id($child_param[1]);
+							$topic_ids = $this->model('feature')->get_topics_by_feature_id($child_param[1]);
 						break;
 					}
 				}
 				
-				if ($topics_id)
+				if ($topic_ids)
 				{
-					$article_list = $this->model('article')->get_articles_list_by_topic_ids($param, 5, 'add_time DESC', $topics_id);
+					$article_list = $this->model('article')->get_articles_list_by_topic_ids($param, 5, 'add_time DESC', $topic_ids);
 				}
 				else
 				{
@@ -461,12 +461,12 @@ class weixin_class extends AWS_MODEL
 						break;
 						
 						case 'FEATURE':
-							$topics_id = $this->model('feature')->get_topics_by_feature_id($child_param[1]);
+							$topic_ids = $this->model('feature')->get_topics_by_feature_id($child_param[1]);
 						break;
 					}
 				}
 				
-				if ($question_list = $this->model('posts')->get_hot_posts('question', $category_id, array($topics_id), 7, $param, 5))
+				if ($question_list = $this->model('posts')->get_hot_posts('question', $category_id, $topic_ids, 7, $param, 5))
 				{
 					foreach ($question_list AS $key => $val)
 					{
@@ -507,13 +507,13 @@ class weixin_class extends AWS_MODEL
 						break;
 						
 						case 'FEATURE':
-							$topics_id = $this->model('feature')->get_topics_by_feature_id($child_param[1]);
+							$topic_ids = $this->model('feature')->get_topics_by_feature_id($child_param[1]);
 						break;
 					}
 				}
 				
-				if ($question_list = $this->model('posts')->get_posts_list('question', $param, 5, 'new', array($topics_id), $category_id))
-				{					
+				if ($question_list = $this->model('posts')->get_posts_list('question', $param, 5, 'new', $topic_ids, $category_id))
+				{		
 					foreach ($question_list AS $key => $val)
 					{
 						if (!$response_message)
@@ -525,12 +525,31 @@ class weixin_class extends AWS_MODEL
 						}
 						else
 						{
-							$image_file = get_avatar_url($val['published_uid'], 'max');
+							if ($val['uid'])
+							{
+								$image_file = get_avatar_url($val['uid'], 'max');
+							}
+							else
+							{
+								$image_file = get_avatar_url($val['published_uid'], 'max');
+							}
 						}
 						
+						
+						if ($val['uid'])
+						{
+							$title = $val['title'];
+							$link = get_js_url('/m/article/' . $val['id']);
+						}
+						else
+						{
+							$title = $val['question_content'];
+							$link = get_js_url('/m/question/' . $val['question_id']);
+						}
+
 						$response_message[] = array(
-							'title' => $val['question_content'],
-							'link' => get_js_url('/m/question/' . $val['question_id']),
+							'title' => $title,
+							'link' => $link,
 							'image_file' => $image_file
 						);
 					}
@@ -553,12 +572,12 @@ class weixin_class extends AWS_MODEL
 						break;
 						
 						case 'FEATURE':
-							$topics_id = $this->model('feature')->get_topics_by_feature_id($child_param[1]);
+							$topic_ids = $this->model('feature')->get_topics_by_feature_id($child_param[1]);
 						break;
 					}
 				}
 				
-				if ($question_list = $this->model('posts')->get_posts_list(null, $param, 5, 'new', array($topics_id), $category_id))
+				if ($question_list = $this->model('posts')->get_posts_list(null, $param, 5, 'new', $topic_ids, $category_id))
 				{					
 					foreach ($question_list AS $key => $val)
 					{
@@ -618,12 +637,12 @@ class weixin_class extends AWS_MODEL
 						break;
 						
 						case 'FEATURE':
-							$topics_id = $this->model('feature')->get_topics_by_feature_id($child_param[1]);
+							$topic_ids = $this->model('feature')->get_topics_by_feature_id($child_param[1]);
 						break;
 					}
 				}
 				
-				if ($question_list = $this->model('posts')->get_posts_list('question', $param, 5, 'unresponsive', array($topics_id), $category_id))
+				if ($question_list = $this->model('posts')->get_posts_list('question', $param, 5, 'unresponsive', $topic_ids, $category_id))
 				{					
 					foreach ($question_list AS $key => $val)
 					{
@@ -636,12 +655,31 @@ class weixin_class extends AWS_MODEL
 						}
 						else
 						{
-							$image_file = get_avatar_url($val['published_uid'], 'max');
+							if ($val['uid'])
+							{
+								$image_file = get_avatar_url($val['uid'], 'max');
+							}
+							else
+							{
+								$image_file = get_avatar_url($val['published_uid'], 'max');
+							}
 						}
 						
+						
+						if ($val['uid'])
+						{
+							$title = $val['title'];
+							$link = get_js_url('/m/article/' . $val['id']);
+						}
+						else
+						{
+							$title = $val['question_content'];
+							$link = get_js_url('/m/question/' . $val['question_id']);
+						}
+
 						$response_message[] = array(
-							'title' => $val['question_content'],
-							'link' => get_js_url('/m/question/' . $val['question_id']),
+							'title' => $title,
+							'link' => $link,
 							'image_file' => $image_file
 						);
 					}
@@ -664,12 +702,12 @@ class weixin_class extends AWS_MODEL
 						break;
 						
 						case 'FEATURE':
-							$topics_id = $this->model('feature')->get_topics_by_feature_id($child_param[1]);
+							$topic_ids = $this->model('feature')->get_topics_by_feature_id($child_param[1]);
 						break;
 					}
 				}
 				
-				if ($question_list = $this->model('posts')->get_posts_list('question', $param, 5, null, array($topics_id), $category_id, null, null, true))
+				if ($question_list = $this->model('posts')->get_posts_list('question', $param, 5, null, $topic_ids, $category_id, null, null, true))
 				{
 					foreach ($question_list AS $key => $val)
 					{
@@ -682,12 +720,31 @@ class weixin_class extends AWS_MODEL
 						}
 						else
 						{
-							$image_file = get_avatar_url($val['published_uid'], 'max');
+							if ($val['uid'])
+							{
+								$image_file = get_avatar_url($val['uid'], 'max');
+							}
+							else
+							{
+								$image_file = get_avatar_url($val['published_uid'], 'max');
+							}
 						}
 						
+						
+						if ($val['uid'])
+						{
+							$title = $val['title'];
+							$link = get_js_url('/m/article/' . $val['id']);
+						}
+						else
+						{
+							$title = $val['question_content'];
+							$link = get_js_url('/m/question/' . $val['question_id']);
+						}
+
 						$response_message[] = array(
-							'title' => $val['question_content'],
-							'link' => get_js_url('/m/question/' . $val['question_id']),
+							'title' => $title,
+							'link' => $link,
 							'image_file' => $image_file
 						);
 					}
@@ -1079,16 +1136,26 @@ class weixin_class extends AWS_MODEL
 				{
 					if ($sub_key == $command)
 					{
-						return $sub_val['attch_key'];
+						return $this->get_client_list_image_url_by_attch_key($sub_val['attch_key']);
 					}
 				}
 			}
 			
 			if ($key == $command)
 			{
-				return $val['attch_key'];
+				return $this->get_client_list_image_url_by_attch_key($val['attch_key']);
 			}
 		}
+	}
+	
+	public function get_client_list_image_url_by_attch_key($attch_key)
+	{
+		if (!$attch_key)
+		{
+			return false;
+		}
+		
+		return get_setting('upload_url') . '/weixin/list_image/' . $attch_key . '.jpg';
 	}
 	
 	public function get_weixin_app_id_setting_var()
@@ -1117,7 +1184,7 @@ class weixin_class extends AWS_MODEL
 	
 	public function client_list_image_clean()
 	{
-		if (!is_dir(ROOT_PATH . 'weixin/list_image/'))
+		if (!is_dir(get_setting('upload_dir') . '/weixin/list_image/'))
 		{
 			return false;
 		}
@@ -1137,11 +1204,11 @@ class weixin_class extends AWS_MODEL
 			$attach_list[] = $val['attch_key'] . '.jpg';
 		}
 		
-		$files_list = fetch_file_lists(ROOT_PATH . 'weixin/list_image/', 'jpg');
+		$files_list = fetch_file_lists(get_setting('upload_dir') . '/weixin/list_image/', 'jpg');
 			    
 	    foreach ($files_list AS $search_file)
 	    {
-	    	if (!in_array(str_replace('square_', '', base_name($search_file))))
+	    	if (!in_array(str_replace('square_', '', basename($search_file))))
 	    	{
 		    	unlink($search_file);
 	    	}

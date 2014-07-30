@@ -48,6 +48,11 @@ class AWS_CONTROLLER
 		else
 		{
 			$user_group = $this->model('account')->get_user_group_by_id(99);
+			
+			if ($_GET['fromuid'])
+			{
+				HTTP::set_cookie('fromuid', $_GET['fromuid']);
+			}
 		}
 		
 		$this->user_info['group_name'] = $user_group['group_name'];
@@ -352,7 +357,14 @@ class AWS_ADMIN_CONTROLLER extends AWS_CONTROLLER
 		}
 		else
 		{
-			HTTP::redirect(get_setting('base_url') . '/?/admin/login/url-' . base64_encode($_SERVER['REQUEST_URI']));
+			if ($_POST['_post_type'] == 'ajax')
+			{
+				H::ajax_json_output(AWS_APP::RSM(null, -1, AWS_APP::lang()->_t('会话超时, 请重新登录')));
+			}
+			else
+			{
+				HTTP::redirect(get_setting('base_url') . '/?/admin/login/url-' . base64_encode($_SERVER['REQUEST_URI']));
+			}
 		}
 		
 		TPL::import_clean();

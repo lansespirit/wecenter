@@ -72,7 +72,7 @@ class ajax extends AWS_CONTROLLER
 			break;
 			
 			case 'favorite':
-				$action_list = $this->model('actions')->get_favorite_tag_action_list($_GET['topic_title'], $this->user_id, intval($_GET['page']) * get_setting('contents_per_page') . ', ' . get_setting('contents_per_page'));
+				$action_list = $this->model('favorite')->get_item_list($_GET['topic_title'], $this->user_id, intval($_GET['page']) * get_setting('contents_per_page') . ', ' . get_setting('contents_per_page'));
 			break;
 		}
 		
@@ -288,10 +288,10 @@ class ajax extends AWS_CONTROLLER
 			@unlink(get_setting('upload_dir') . '/topic/' . str_replace('_' . AWS_APP::config()->get('image')->topic_thumbnail['min']['w'] . '_' . AWS_APP::config()->get('image')->topic_thumbnail['min']['h'], '', $topic_info['topic_pic']));
 		}
 		
-		$this->model('topic')->update_topic($_GET['topic_id'], null, null, date('Ymd') . '/' . basename($thumb_file['min']));
+		$this->model('topic')->update_topic($_GET['topic_id'], null, null, gmdate('Ymd') . '/' . basename($thumb_file['min']));
 		
 		H::ajax_json_output(AWS_APP::RSM(array(
-			'preview' => get_setting('upload_url') . '/topic/' . date('Ymd') . '/' . basename($thumb_file['mid'])
+			'preview' => get_setting('upload_url') . '/topic/' . gmdate('Ymd') . '/' . basename($thumb_file['mid'])
 		), 1, null));
 	}
 	
